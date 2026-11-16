@@ -20,6 +20,12 @@ small,label,.muted{color:var(--muted)}
 label{display:block;font-size:14px;margin-bottom:5px}
 p{margin:6px 0;overflow-wrap:anywhere}
 input,select{background:var(--p2);border:1px solid var(--line);border-radius:9px;color:var(--text);padding:12px;width:100%;min-width:0;font:inherit}
+input[type=date],input[type=month]{-webkit-appearance:none;appearance:none;display:block}
+input[type=date],input[type=month],select{min-height:46px;line-height:1.2;text-align:left}
+input[type=date]::-webkit-date-and-time-value{text-align:left;min-height:1.2em}
+.top3{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:end}
+.top3 label{display:block;white-space:nowrap}
+.top3>div:last-child{grid-column:1/-1}
 input[type=checkbox]{width:20px;height:20px;padding:0;vertical-align:middle;accent-color:var(--mint)}
 button{border:0;border-radius:9px;padding:11px 16px;background:var(--mint);color:#062019;font:inherit;font-weight:700;cursor:pointer;line-height:1.35}
 button:disabled{opacity:.5;cursor:not-allowed}
@@ -163,7 +169,7 @@ details{margin-top:10px}summary{cursor:pointer;color:var(--mint)}
  <div class="panel notice hide" id="openNote" style="border-color:#2f6b5c">🔔 早班已交班保存，这一天还没有结束。晚班请填写接班清点金额、全天营业额合计和全天支出，最后清点钱箱，点“保存当日记录”完成。<div id="openSum" style="margin-top:8px"></div></div>
  <div class="panel lockbar notice hide" id="lockNote">🔒 该营业日已保存，员工不能修改，只能查看。如需修改，请联系管理员（管理员可在“管理后台”开启“允许员工修改”）。</div>
  <div class="panel"><h3>本月累计 <small id="miniMonth"></small></h3><div class="metrics" id="miniMetrics"></div></div>
- <div class="panel row">
+ <div class="panel row top3">
   <div><label for="date">营业日</label><input type="date" id="date"></div>
   <div><label for="branch">分店</label><select id="branch"></select></div>
   <div><label for="cashier">收款人</label><input id="cashier" placeholder="填写收款人" autocomplete="off"></div>
@@ -493,8 +499,8 @@ function dbToRecord(x){
 function renderPayRows(){
  $('pay').innerHTML=methods.map(function(m,i){
   return '<div class="grid'+(m.active===false?' hide':'')+'" data-pay-row="'+i+'"><b>'+esc(m.name)+'</b>'+
-   '<input type="number" inputmode="numeric" min="0" step="1" placeholder="0" id="a'+i+'" aria-label="'+esc(m.name)+'金额">'+
-   '<input type="number" inputmode="numeric" min="0" step="1" placeholder="0" id="c'+i+'" aria-label="'+esc(m.name)+'笔数"></div>';
+   '<input type="number" inputmode="numeric" min="0" step="1" id="a'+i+'" aria-label="'+esc(m.name)+'金额">'+
+   '<input type="number" inputmode="numeric" min="0" step="1" id="c'+i+'" aria-label="'+esc(m.name)+'笔数"></div>';
  }).join('');
 }
 function renderCashFields(){
@@ -508,7 +514,7 @@ function renderExpenseRows(items){
  $('expenseItems').innerHTML=arr.map(function(x,i){
   var mth=methodLabel(x.method);
   return '<div class="panel row" data-expense-row><div><label>类别 / 用途</label><input class="expense-title" list="expCats" value="'+esc(x.title)+'" placeholder="选择或输入，例如：食材"></div>'+
-   '<div><label>金额（日元）</label><input class="expense-amount" type="number" inputmode="numeric" min="0" placeholder="0" value="'+(num(x.amount)?num(x.amount):'')+'"></div>'+
+   '<div><label>金额（日元）</label><input class="expense-amount" type="number" inputmode="numeric" min="0" value="'+(num(x.amount)?num(x.amount):'')+'"></div>'+
    '<div><label>支付方式</label><select class="expense-method">'+EXP_METHODS.map(function(m){return '<option value="'+m+'"'+(m===mth?' selected':'')+'>'+m+'</option>'}).join('')+'</select></div>'+
    '<button class="secondary" type="button" data-remove-expense="'+i+'">删除</button></div>';
  }).join('');
