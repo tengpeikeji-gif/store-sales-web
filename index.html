@@ -12,9 +12,10 @@
 html,body{max-width:100%;overflow-x:hidden}
 body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 system-ui,"Hiragino Sans","Yu Gothic","Microsoft YaHei",sans-serif}
 main{max-width:1000px;margin:auto;padding:20px}
-.hdr-r{display:flex;flex-direction:column;align-items:flex-end;gap:6px}.langsw{display:flex;border:2px solid var(--mint);border-radius:999px;overflow:hidden}.langsw button{background:transparent;color:var(--text);border:0;border-radius:0;padding:8px 14px;min-height:40px;font-size:15px;font-weight:600;cursor:pointer}.langsw button.on{background:var(--mint);color:#0d1714}.langsw button:focus-visible{outline:2px solid var(--text);outline-offset:-2px}
+.hdr-r{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%}.langsw{display:flex;border:2px solid var(--mint);border-radius:999px;overflow:hidden}.langsw button{background:transparent;color:var(--text);border:0;border-radius:0;padding:8px 14px;min-height:40px;font-size:15px;font-weight:600;cursor:pointer}.langsw button.on{background:var(--mint);color:#0d1714}.langsw button:focus-visible{outline:2px solid var(--text);outline-offset:-2px}
 .brandrow{display:flex;align-items:center;gap:12px}.logo{width:56px;height:56px;border-radius:12px;flex:none}.logo-big{display:block;width:120px;height:120px;border-radius:20px;margin:0 auto 14px}
-header{display:flex;justify-content:space-between;gap:12px;align-items:flex-end;flex-wrap:wrap}
+header{display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center}
+header .brandrow{justify-content:center;text-align:left}
 h1{margin:0;font-size:26px}h2{margin:0 0 10px;font-size:20px}h3{margin:0 0 10px;font-size:17px}
 small,label,.muted{color:var(--muted)}
 label{display:block;font-size:14px;margin-bottom:5px}
@@ -23,6 +24,12 @@ input,select{background:var(--p2);border:1px solid var(--line);border-radius:9px
 input[type=date],input[type=month]{-webkit-appearance:none;appearance:none;display:block}
 input[type=date],input[type=month],select{min-height:46px;line-height:1.2;text-align:left}
 input[type=date]::-webkit-date-and-time-value{text-align:left;min-height:1.2em}
+.top3x{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.xbar{display:grid;grid-template-columns:minmax(70px,26%) 1fr auto;gap:8px;align-items:center;margin:6px 0;cursor:pointer;font-size:14px}
+.xbar .tr{background:var(--p2);border-radius:5px;height:14px;overflow:hidden}
+.xbar .fl{display:block;height:100%;background:#3987e5;border-radius:0 4px 4px 0}
+.xbar:hover .nm{text-decoration:underline}
+.xbar .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .top3{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:end}
 .top3 label{display:block;white-space:nowrap}
 .top3>div:last-child{grid-column:1/-1}
@@ -156,6 +163,7 @@ details{margin-top:10px}summary{cursor:pointer;color:var(--mint)}
  <button class="tab active" data-v="录入" id="entryTab">录入</button>
  <button class="tab" data-v="月报">月报</button>
  <button class="tab" data-v="分析">数据分析</button>
+ <button class="tab" data-v="支出">支出分析</button>
  <button class="tab" data-v="对账">月末对账</button>
  <button class="tab" data-v="考勤">考勤</button>
  <button class="tab" data-v="导出">导出</button>
@@ -299,6 +307,33 @@ details{margin-top:10px}summary{cursor:pointer;color:var(--mint)}
  <div class="panel"><h3>星期几最旺（近 12 周日均营业额）</h3><div class="svgc" id="anWdChart"></div><div class="tablewrap" id="anWdTable"></div></div>
  <div class="panel" id="anBranchPanel"><h3>分店对比</h3><div class="tablewrap" id="anBranchTable"></div></div>
  <div class="panel"><h3>数据解读</h3><ul class="ins" id="anInsights"></ul></div>
+</section>
+
+<section class="view hide" id="支出">
+ <div class="panel noprint">
+  <div class="row top3x">
+   <div><label for="xpBranch">分店</label><select id="xpBranch"></select></div>
+   <div><label for="xpMethod">支付方式</label><select id="xpMethod"><option value="">全部</option><option>现金</option><option>转账</option><option>PayPay</option><option>其他</option></select></div>
+  </div>
+  <div class="row" style="margin-top:10px">
+   <div><label for="xpFrom">开始日期</label><input type="date" id="xpFrom"></div>
+   <div><label for="xpTo">结束日期</label><input type="date" id="xpTo"></div>
+  </div>
+  <div class="actions" style="margin-top:10px">
+   <button class="secondary" type="button" data-xr="month">本月</button><button class="secondary" type="button" data-xr="prev">上月</button><button class="secondary" type="button" data-xr="30">近 30 天</button><button class="secondary" type="button" data-xr="90">近 90 天</button><button class="secondary" type="button" data-xr="all">全部</button>
+  </div>
+  <label for="xpQ" style="margin-top:12px">查询单项支出（输入用途关键字，例如：食材、房租）</label>
+  <input id="xpQ" placeholder="留空 = 全部用途；点下面的“用途排行”也可以直接查" autocomplete="off">
+ </div>
+ <div class="panel"><div class="tiles" id="xpTiles"></div></div>
+ <div class="panel"><h3>哪类支出最高（用途排行）</h3><p class="muted" style="margin:0 0 8px;font-size:13px">点任意一行，下面会列出这一类的每一笔明细。“较上一期”是和前面同样天数的一段时间相比。</p><div id="xpBars"></div><div class="tablewrap" id="xpCatTable"></div></div>
+ <div class="panel" id="xpBranchPanel"><h3>分店对比</h3><div class="tablewrap" id="xpBranchTable"></div></div>
+ <div class="panel"><h3>数据解读</h3><ul class="ins" id="xpInsights"></ul></div>
+ <div class="panel">
+  <h3>支出明细 <small id="xpDetailCap"></small></h3>
+  <div class="row noprint" style="margin-bottom:10px"><div><label for="xpSort">排序</label><select id="xpSort"><option value="amt">金额从高到低</option><option value="date">日期从新到旧</option></select></div><button class="secondary" id="xpCsv" type="button">导出这份明细 CSV</button></div>
+  <div class="tablewrap" id="xpDetail"></div>
+ </div>
 </section>
 
 <section class="view hide" id="对账">
@@ -1016,7 +1051,7 @@ function fillBranchSelects(names){
  branchList=names;
  var f=$('filter').value,rc=$('rcBranch').value,af=$('atFilter').value,ab=$('atBranch').value,opts=names.map(function(n){return '<option value="'+esc(n)+'">'+esc(n)+'</option>'}).join('');
  $('branch').innerHTML=opts;$('assignBranch').innerHTML=opts;$('newManagerBranch').innerHTML=opts;$('atBranch').innerHTML=opts;
- $('filter').innerHTML='<option value="">全部分店</option>'+opts;$('rcBranch').innerHTML=opts;var av=$('anBranch').value,ev=$('exBranch').value;$('anBranch').innerHTML='<option value="">全部分店</option>'+opts;$('exBranch').innerHTML='<option value="">全部分店</option>'+opts;if(names.indexOf(av)>=0)$('anBranch').value=av;if(names.indexOf(ev)>=0)$('exBranch').value=ev;$('atFilter').innerHTML='<option value="">全部分店</option>'+opts;
+ $('filter').innerHTML='<option value="">全部分店</option>'+opts;$('rcBranch').innerHTML=opts;var av=$('anBranch').value,ev=$('exBranch').value;var xv=$('xpBranch').value;$('anBranch').innerHTML='<option value="">全部分店</option>'+opts;$('xpBranch').innerHTML='<option value="">全部分店</option>'+opts;if(names.indexOf(xv)>=0)$('xpBranch').value=xv;$('exBranch').innerHTML='<option value="">全部分店</option>'+opts;if(names.indexOf(av)>=0)$('anBranch').value=av;if(names.indexOf(ev)>=0)$('exBranch').value=ev;$('atFilter').innerHTML='<option value="">全部分店</option>'+opts;
  if(names.indexOf(f)>=0||f==='')$('filter').value=f;
  if(names.indexOf(rc)>=0)$('rcBranch').value=rc;
  if(names.indexOf(af)>=0||af==='')$('atFilter').value=af;
@@ -1331,6 +1366,99 @@ function renderAnalysis(){
  $('anInsights').innerHTML=ins.map(function(t){return '<li>'+t+'</li>'}).join('');
 }
 
+
+/* ---------- 支出分析 ---------- */
+var XP_INIT=false,XP_LIST=[];
+function xpSetRange(k){
+ var t=localDate(),m=localMonth();
+ if(k==='month'){$('xpFrom').value=m+'-01';$('xpTo').value=t}
+ else if(k==='prev'){var pm=prevMonth(m);$('xpFrom').value=pm+'-01';$('xpTo').value=localDate(new Date(+m.slice(0,4),+m.slice(5,7)-1,0))}
+ else if(k==='30'){$('xpFrom').value=addDays(t,-29);$('xpTo').value=t}
+ else if(k==='90'){$('xpFrom').value=addDays(t,-89);$('xpTo').value=t}
+ else{$('xpFrom').value='';$('xpTo').value=''}
+}
+function xpItems(rs,a,z,meth){
+ var out=[];
+ rs.forEach(function(r){
+  if(a&&r.date<a)return;if(z&&r.date>z)return;
+  r.expenses.forEach(function(e){
+   var amt=num(e.amount);if(!amt)return;
+   var m=methodLabel(e.method);if(meth&&m!==meth)return;
+   out.push({date:r.date,branch:r.branch,cashier:r.cashier,title:String(e.title||'').trim()||'（未填用途）',amount:amt,method:m});
+  });
+ });
+ return out;
+}
+function renderExpenseAnalysis(){
+ if(!currentProfile)return;
+ if(!XP_INIT){XP_INIT=true;xpSetRange('month')}
+ var br=$('xpBranch').value,meth=$('xpMethod').value,a=$('xpFrom').value,z=$('xpTo').value,q=$('xpQ').value.trim().toLowerCase();
+ var rs=records.filter(function(r){return !br||r.branch===br});
+ var all=xpItems(rs,a,z,meth);
+ var sales=sum(rs.filter(function(r){return (!a||r.date>=a)&&(!z||r.date<=z)}),total);
+ /* 上一期：同样天数 */
+ var prevAll=[];
+ if(a&&z&&a<=z){var n=dayDiff(a,z)+1;prevAll=xpItems(rs,addDays(a,-n),addDays(a,-1),meth)}
+ var tot=sum(all,function(x){return x.amount});
+ /* 分类 */
+ function group(list){var g={};list.forEach(function(x){var o=g[x.title]||(g[x.title]={t:x.title,s:0,n:0,max:0});o.s+=x.amount;o.n++;if(x.amount>o.max)o.max=x.amount});return g}
+ var g=group(all),pg=group(prevAll),cats=Object.keys(g).map(function(k){return g[k]}).sort(function(x,y){return y.s-x.s});
+ /* 顶部 */
+ var top=cats[0],big=all.reduce(function(m,x){return !m||x.amount>m.amount?x:m},null);
+ var days={};all.forEach(function(x){days[x.date]=1});
+ $('xpTiles').innerHTML=[
+  ['支出合计',yen(tot),'<span class="dl na">'+L(all.length+' 笔 · '+Object.keys(days).length+' 天',all.length+' 件・'+Object.keys(days).length+' 日',all.length+' items · '+Object.keys(days).length+' days')+'</span>'],
+  ['占营业额',pct(tot,sales),'<span class="dl na">'+L('同期营业额 '+yen(sales),'同期間の売上 '+yen(sales),'Sales in period '+yen(sales))+'</span>'],
+  ['最高的一类',top?top.t:'—','<span class="dl na">'+(top?yen(top.s)+'（'+pct(top.s,tot)+'）':'')+'</span>'],
+  ['单笔最高',big?yen(big.amount):'—','<span class="dl na">'+(big?esc(big.title)+' · '+esc(big.date):'')+'</span>'],
+  ['较上一期',prevAll.length||a?changeHtmlShort(tot,sum(prevAll,function(x){return x.amount})):'—','<span class="dl na">'+L('上一期 ','前期間 ','Previous ')+yen(sum(prevAll,function(x){return x.amount}))+'</span>']
+ ].map(function(t){return '<div class="tile"><span class="tl">'+esc(t[0])+'</span><span class="tv" style="font-size:'+(t[1].length>8?'16px':'')+'">'+esc(t[1]).replace(/&lt;/g,'<')+'</span>'+t[2]+'</div>'}).join('');
+ /* 排行条形 */
+ var mx=cats.length?cats[0].s:0;
+ $('xpBars').innerHTML=cats.length?cats.slice(0,10).map(function(c){return '<div class="xbar" data-xcat="'+esc(c.t)+'" title="'+esc(c.t)+'"><span class="nm">'+esc(c.t)+'</span><span class="tr"><span class="fl" style="width:'+(mx?Math.max(1,c.s/mx*100):0)+'%"></span></span><span>'+yen(c.s)+' · '+pct(c.s,tot)+'</span></div>'}).join(''):'<p class="muted">这段时间没有支出记录。</p>';
+ $('xpCatTable').innerHTML=cats.length?tableHtml(['用途','金额','占比','笔数','平均每笔','单笔最高','较上一期'],cats.map(function(c){
+  var pv=pg[c.t]?pg[c.t].s:0;
+  return ['<a href="#" data-xcat="'+esc(c.t)+'">'+esc(c.t)+'</a>',yen(c.s),pct(c.s,tot),c.n,yen(Math.round(c.s/c.n)),yen(c.max),changeCell(c.s,pv)]
+ }),['合计',yen(tot),'100%',all.length,all.length?yen(Math.round(tot/all.length)):'—','','']):'';
+ /* 分店对比 */
+ var multi=!br&&branchList.length>1;$('xpBranchPanel').classList.toggle('hide',!multi);
+ if(multi){
+  var bs=branchList.map(function(b){var l=all.filter(function(x){return x.branch===b}),s=sum(l,function(x){return x.amount}),sl=sum(records.filter(function(r){return r.branch===b&&(!a||r.date>=a)&&(!z||r.date<=z)}),total),gg=group(l),tc=Object.keys(gg).map(function(k){return gg[k]}).sort(function(x,y){return y.s-x.s})[0];return {b:b,s:s,sl:sl,n:l.length,top:tc}}).sort(function(x,y){return y.s-x.s});
+  $('xpBranchTable').innerHTML=tableHtml(['分店','支出合计','占营业额','笔数','最高的一类'],bs.map(function(o){return [esc(o.b),yen(o.s),pct(o.s,o.sl),o.n,o.top?esc(o.top.t)+'（'+yen(o.top.s)+'）':'—']}));
+ }
+ /* 解读 */
+ var ins=[];
+ if(cats.length){
+  ins.push(L('支出最高的一类是“'+esc(top.t)+'”，共 '+yen(top.s)+'，占全部支出的 '+pct(top.s,tot)+'。','支出が最も多い項目は「'+esc(top.t)+'」で、合計 '+yen(top.s)+'、全体の '+pct(top.s,tot)+' です。','The biggest expense category is "'+esc(top.t)+'": '+yen(top.s)+', '+pct(top.s,tot)+' of all expenses.'));
+  if(cats.length>=3){var t3=cats[0].s+cats[1].s+cats[2].s;ins.push(L('前三类（'+cats.slice(0,3).map(function(c){return esc(c.t)}).join('、')+'）合计占 '+pct(t3,tot)+'，控制支出先看这几项。','上位3項目（'+cats.slice(0,3).map(function(c){return esc(c.t)}).join('、')+'）で '+pct(t3,tot)+' を占めています。','The top 3 ('+cats.slice(0,3).map(function(c){return esc(c.t)}).join(', ')+') make up '+pct(t3,tot)+'.'))}
+  if(sales)ins.push(L('这段时间支出占营业额 '+pct(tot,sales)+'（营业额 '+yen(sales)+'）。','この期間の支出は売上の '+pct(tot,sales)+' です（売上 '+yen(sales)+'）。','Expenses are '+pct(tot,sales)+' of sales in this period (sales '+yen(sales)+').'));
+  var rise=cats.map(function(c){var pv=pg[c.t]?pg[c.t].s:0;return {t:c.t,d:c.s-pv,pv:pv,s:c.s}}).filter(function(o){return o.pv>0}).sort(function(x,y){return y.d-x.d})[0];
+  if(rise&&rise.d>0)ins.push(L('和上一期相比，“'+esc(rise.t)+'”涨得最多：'+yen(rise.pv)+' → '+yen(rise.s)+'（+'+yen(rise.d)+'）。','前期間と比べて最も増えたのは「'+esc(rise.t)+'」：'+yen(rise.pv)+' → '+yen(rise.s)+'（+'+yen(rise.d)+'）。','Compared with the previous period, "'+esc(rise.t)+'" rose the most: '+yen(rise.pv)+' → '+yen(rise.s)+' (+'+yen(rise.d)+').'));
+  var cashT=sum(all.filter(function(x){return x.method==='现金'}),function(x){return x.amount});
+  ins.push(L('现金支出 '+yen(cashT)+'（'+pct(cashT,tot)+'），其余是转账/PayPay/其他。','現金支出は '+yen(cashT)+'（'+pct(cashT,tot)+'）で、残りは振込／PayPay／その他です。','Cash expenses: '+yen(cashT)+' ('+pct(cashT,tot)+'); the rest is transfer/PayPay/other.'));
+ }else ins.push(L('这段时间没有支出记录。','この期間の支出記録はありません。','No expense records in this period.'));
+ $('xpInsights').innerHTML=ins.map(function(t){return '<li>'+t+'</li>'}).join('');
+ /* 明细 */
+ var det=all.filter(function(x){return !q||x.title.toLowerCase().indexOf(q)>=0});
+ det.sort($('xpSort').value==='date'?function(x,y){return x.date<y.date?1:x.date>y.date?-1:y.amount-x.amount}:function(x,y){return y.amount-x.amount});
+ XP_LIST=det;
+ var dt=sum(det,function(x){return x.amount}),LIM=300;
+ $('xpDetailCap').textContent=L('（'+det.length+' 笔，合计 '+yen(dt)+(q?'，用途含“'+$('xpQ').value.trim()+'”':'')+(det.length>LIM?'，只显示前 '+LIM+' 笔，完整请导出':'')+'）','（'+det.length+' 件、合計 '+yen(dt)+(q?'、用途に「'+$('xpQ').value.trim()+'」を含む':'')+(det.length>LIM?'、先頭 '+LIM+' 件のみ表示（全件はエクスポート）':'')+'）','('+det.length+' items, total '+yen(dt)+(q?', purpose contains "'+$('xpQ').value.trim()+'"':'')+(det.length>LIM?', showing first '+LIM+' (export for all)':'')+')');
+ $('xpDetail').innerHTML=det.length?tableHtml(['日期','分店','用途','支付方式','金额'],det.slice(0,LIM).map(function(x){return [esc(x.date),esc(x.branch),esc(x.title),esc(x.method),yen(x.amount)]}),['合计','','','',yen(dt)]):'<p class="muted">没有符合条件的支出。</p>';
+}
+function changeHtmlShort(cur,prev){if(!prev)return L('无可比数据','比較データなし','No data');var p=(cur-prev)/prev*100;return (p>=0?'▲ +':'▼ ')+p.toFixed(1)+'%'}
+function xpBind(){
+ ['xpBranch','xpMethod','xpFrom','xpTo','xpSort'].forEach(function(id){$(id).onchange=renderExpenseAnalysis});
+ $('xpQ').addEventListener('input',renderExpenseAnalysis);
+ document.querySelectorAll('[data-xr]').forEach(function(b){b.onclick=function(){xpSetRange(b.dataset.xr);renderExpenseAnalysis()}});
+ function pick(e){var t=e.target.closest('[data-xcat]');if(!t)return;e.preventDefault();var v=t.dataset.xcat;$('xpQ').value=v==='（未填用途）'?'':v;renderExpenseAnalysis();$('xpDetail').scrollIntoView({behavior:'smooth',block:'start'})}
+ $('xpBars').addEventListener('click',pick);$('xpCatTable').addEventListener('click',pick);
+ $('xpCsv').onclick=function(){
+  var rows=[['营业日','分店','收款人','用途','支付方式','金额']].concat(XP_LIST.map(function(x){return [x.date,x.branch,x.cashier,x.title,x.method,x.amount]}));
+  download('支出明细_'+($('xpFrom').value||'全部')+'_'+($('xpTo').value||'')+'.csv',rows);
+ };
+}
+
 /* ---------- 导出中心 ---------- */
 var EX_ITEMS=[
  {k:'sales',label:'营业明细',desc:'每天每店一行：各收款项目金额/笔数、外卖、支出、差额、备注'},
@@ -1498,7 +1626,7 @@ function showApp(on){
 function showView(name){
  document.querySelectorAll('.tab').forEach(function(t){t.classList.toggle('active',t.dataset.v===name)});
  document.querySelectorAll('.view').forEach(function(v){v.classList.toggle('hide',v.id!==name)});
- if(name==='月报')renderReport();else if(name==='对账')renderRecon();else if(name==='考勤')renderAtt();else if(name==='分店')renderBranches();else if(name==='分析')renderAnalysis();else if(name==='导出')renderExport();else if(name==='管理')adminPanel();
+ if(name==='月报')renderReport();else if(name==='对账')renderRecon();else if(name==='考勤')renderAtt();else if(name==='分店')renderBranches();else if(name==='分析')renderAnalysis();else if(name==='支出')renderExpenseAnalysis();else if(name==='导出')renderExport();else if(name==='管理')adminPanel();
 }
 function setLoginRole(role){
  loginRole=role;var admin=role==='admin';
@@ -1513,7 +1641,7 @@ function applyRoleUI(user){
   $('branch').disabled=false;
  }else{
   var one='<option value="'+esc(currentProfile.branch)+'">'+esc(currentProfile.branch)+'</option>';
-  $('branch').innerHTML=one;$('filter').innerHTML=one;$('rcBranch').innerHTML=one;$('atBranch').innerHTML=one;$('atFilter').innerHTML=one;$('anBranch').innerHTML=one;$('exBranch').innerHTML=one;
+  $('branch').innerHTML=one;$('filter').innerHTML=one;$('rcBranch').innerHTML=one;$('atBranch').innerHTML=one;$('atFilter').innerHTML=one;$('anBranch').innerHTML=one;$('xpBranch').innerHTML=one;$('exBranch').innerHTML=one;
   $('branch').value=currentProfile.branch;$('branch').disabled=true;
   $('branchLabel').textContent=currentProfile.branch;
   branchList=[currentProfile.branch];
@@ -1557,7 +1685,7 @@ $('atName').addEventListener('input',function(){var b=$('atBranch').value,n=$('a
 $('allowEditChk').onchange=saveAllowEdit;$('memAdd').onclick=memAdd;$('memList').addEventListener('click',memAction);
 $('atAdd').onclick=addAtt;$('atMonth').onchange=renderAtt;$('atFilter').onchange=renderAtt;$('atExport').onclick=exportAtt;$('atList').onclick=delAtt;
 var rzT;window.addEventListener('resize',function(){clearTimeout(rzT);rzT=setTimeout(function(){if(currentProfile&&!$('分析').classList.contains('hide'))renderAnalysis()},200)});
-$('anBranch').onchange=renderAnalysis;$('anWeeks').onchange=renderAnalysis;
+$('anBranch').onchange=renderAnalysis;$('anWeeks').onchange=renderAnalysis;xpBind();
 $('exItems').addEventListener('click',function(e){var b=e.target.closest('[data-exone]');if(b)exOne(b.dataset.exone)});
 $('exAll').onclick=exExcel;$('exCsvAll').onclick=exCsvAll;
 document.querySelectorAll('[data-exq]').forEach(function(b){b.onclick=function(){exQuick(b.dataset.exq)}});
@@ -1604,11 +1732,13 @@ $('rcBody').addEventListener('input',function(e){
 
 $('managerLoginMode').onclick=function(){setLoginRole('manager')};
 $('adminLoginMode').onclick=function(){setLoginRole('admin')};
+try{var _se=safeGet('lastEmail');if(_se)$('loginEmail').value=_se}catch(e){}
 $('loginButton').onclick=async function(){
  say('正在登录…');
  try{
   var r=await client.auth.signInWithPassword({email:$('loginEmail').value.trim(),password:$('loginPassword').value});
   if(r.error){say('登录失败，请检查邮箱和密码，或确认邮箱已验证');return}
+  safeSet('lastEmail',$('loginEmail').value.trim());
   await sessionReady(r.data.user,loginRole);
  }catch(e){say('网络异常，请稍后重试')}
 };
@@ -2174,7 +2304,25 @@ var I18N={
 "按面额填写枚数，自动算出钱箱总数":["額面ごとに枚数を入力すると合計が自動計算されます","Enter the number of notes/coins; the total is calculated automatically"],
 "展开填写交接班（不分班的日子不用填）":["引き継ぎを入力（シフト分けしない日は不要）","Open to fill in handover (not needed on days without shifts)"],
 "早班账面应有":["早番の帳簿上の理論残高","Morning expected cash (books)"],
-"早班账目差额":["早番の帳簿差額","Morning books difference"]
+"早班账目差额":["早番の帳簿差額","Morning books difference"],
+"支出分析":["支出分析","Expense Analysis"],
+"近 30 天":["直近30日","Last 30 days"],
+"查询单项支出（输入用途关键字，例如：食材、房租）":["個別の支出を検索（用途のキーワードを入力。例：食材、家賃）","Search a single expense (type a purpose keyword, e.g. food, rent)"],
+"留空 = 全部用途；点下面的“用途排行”也可以直接查":["空欄＝すべての用途。下の「用途ランキング」をタップしても検索できます","Leave empty for all; or tap a row in the ranking below"],
+"哪类支出最高（用途排行）":["どの支出が多いか（用途ランキング）","Which expenses are highest (ranking)"],
+"点任意一行，下面会列出这一类的每一笔明细。“较上一期”是和前面同样天数的一段时间相比。":["行をタップすると、その項目の明細が下に表示されます。「前期間比」は直前の同じ日数の期間との比較です。","Tap a row to list every item in that category below. \"vs previous\" compares with the previous period of the same length."],
+"最高的一类":["最も多い項目","Highest category"],
+"单笔最高":["最高の1件","Largest single expense"],
+"较上一期":["前期間比","vs previous"],
+"平均每笔":["平均/件","Avg per item"],
+"排序":["並び順","Sort"],
+"金额从高到低":["金額の高い順","Amount, high to low"],
+"日期从新到旧":["日付の新しい順","Date, newest first"],
+"导出这份明细 CSV":["この明細をCSV出力","Export these details (CSV)"],
+"（未填用途）":["（用途未入力）","(no purpose)"],
+"没有符合条件的支出。":["条件に合う支出はありません。","No matching expenses."],
+"这段时间没有支出记录。":["この期間の支出記録はありません。","No expense records in this period."],
+"记住邮箱":["メールを記憶","Remember email"]
 };
 
 var LANG='zh',I18N_RE=null,I18N_BUSY=false,textMap=new WeakMap(),attrMap=new WeakMap(),I18N_ATTRS=['placeholder','title','aria-label'];
@@ -2223,7 +2371,7 @@ function setLang(l){
  i18nRun(function(){i18nNode(document.body);document.title=tr('味爱特日本餐饮管理系统')});
  try{renderAnalysisIfVisible()}catch(e){}
 }
-function renderAnalysisIfVisible(){if(currentProfile&&$('分析')&&!$('分析').classList.contains('hide'))renderAnalysis()}
+function renderAnalysisIfVisible(){if(currentProfile&&$('分析')&&!$('分析').classList.contains('hide'))renderAnalysis();if(currentProfile&&$('支出')&&!$('支出').classList.contains('hide'))renderExpenseAnalysis()}
 function initI18n(){
  var origAlert=window.alert,origConfirm=window.confirm;
  window.alert=function(m){return origAlert.call(window,tr(m))};
